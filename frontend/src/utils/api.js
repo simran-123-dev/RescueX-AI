@@ -1,17 +1,16 @@
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import axios from "axios";
 
 const api = axios.create({
-  baseURL: API_URL,
-  headers: { 'Content-Type': 'application/json' }
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
 });
 
 api.interceptors.request.use((config) => {
-  const token = window.localStorage.getItem('rescuex_token');
+  const token = localStorage.getItem("rescuex_token");
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   return config;
 });
 
