@@ -21,36 +21,23 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 px-6 py-20 text-slate-100 lg:px-16">
-      <div className="mx-auto max-w-xl rounded-[2rem] border border-white/10 bg-slate-900/80 p-10 shadow-2xl backdrop-blur-xl">
-        <h1 className="text-4xl font-semibold text-white">Sign in to RescueX AI</h1>
-        <p className="mt-3 text-slate-400">Access your emergency dashboard and launch first aid assistance instantly.</p>
+    <div className="page-shell">
+      <div className="glass-card mx-auto max-w-xl p-6 sm:p-8">
+        <p className="eyebrow">Welcome back</p>
+        <h1 className="mt-4 text-3xl font-semibold tracking-tight text-white">Sign in to RescueX AI</h1>
+        <p className="mt-3 leading-7 text-zinc-400">Access your emergency dashboard and launch first aid assistance instantly.</p>
         <form onSubmit={handleSubmit} className="mt-10 space-y-6">
-          <label className="block text-sm text-slate-300">Email</label>
-          <input
-            name="email"
-            type="email"
-            value={form.email}
-            onChange={handleChange}
-            className="w-full rounded-3xl border border-white/10 bg-slate-950 px-5 py-4 text-slate-100 outline-none transition focus:border-cyan-300"
-            required
-          />
-          <label className="block text-sm text-slate-300">Password</label>
-          <input
-            name="password"
-            type="password"
-            value={form.password}
-            onChange={handleChange}
-            className="w-full rounded-3xl border border-white/10 bg-slate-950 px-5 py-4 text-slate-100 outline-none transition focus:border-cyan-300"
-            required
-          />
-          {error && <p className="text-sm text-rose-400">{error}</p>}
-          <button type="submit" className="w-full rounded-full bg-cyan-400 px-6 py-4 text-base font-semibold text-slate-950 transition hover:bg-cyan-300">
-            Continue
-          </button>
+          <label className="block text-sm font-medium text-zinc-300">Email</label>
+          <input name="email" type="email" value={form.email} onChange={handleChange} className="field" required />
+
+          <label className="block text-sm font-medium text-zinc-300">Password</label>
+          <input name="password" type="password" value={form.password} onChange={handleChange} className="field" required />
+
+          {error && <p className="rounded-lg border border-rose-300/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">{error}</p>}
+          <button type="submit" className="primary-btn w-full">Continue</button>
         </form>
-        <p className="mt-6 text-center text-sm text-slate-400">
-          Don’t have an account? <Link to="/signup" className="text-cyan-300 hover:text-cyan-200">Create one</Link>
+        <p className="mt-6 text-center text-sm text-zinc-400">
+          Do not have an account? <Link to="/signup" className="text-teal-200 hover:text-teal-100">Create one</Link>
         </p>
       </div>
     </div>

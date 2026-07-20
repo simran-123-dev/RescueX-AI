@@ -11,10 +11,7 @@ const Profile = () => {
       try {
         const res = await api.get('/api/profile');
         setProfile(res.data);
-        // Format emergency contacts as "Name (Phone)" for display
-        const formattedContacts = (res.data.emergencyContacts || [])
-          .map((c) => c.phone ? `${c.name} (${c.phone})` : c.name)
-          .join(', ');
+        const formattedContacts = (res.data.emergencyContacts || []).map((c) => (c.phone ? `${c.name} (${c.phone})` : c.name)).join(', ');
         setForm({
           name: res.data.name || '',
           bloodGroup: res.data.bloodGroup || '',
@@ -33,27 +30,18 @@ const Profile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Parse emergency contacts: "Name (Phone)" format
       const emergencyContacts = form.emergencyContacts
         .split(',')
         .map((c) => {
           const trimmed = c.trim();
           if (!trimmed) return null;
           const match = trimmed.match(/^(.+?)\s*\(([^)]+)\)$/);
-          if (match) {
-            return { name: match[1].trim(), phone: match[2].trim(), relation: 'Contact' };
-          }
+          if (match) return { name: match[1].trim(), phone: match[2].trim(), relation: 'Contact' };
           return { name: trimmed, phone: '', relation: 'Contact' };
         })
         .filter(Boolean);
 
-      const payload = {
-        name: form.name,
-        bloodGroup: form.bloodGroup,
-        allergies: form.allergies,
-        emergencyContacts
-      };
-      const res = await api.put('/api/profile', payload);
+      const res = await api.put('/api/profile', { ...form, emergencyContacts });
       setProfile(res.data);
       setMessage('Profile updated successfully');
     } catch (err) {
@@ -63,24 +51,33 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 px-6 py-12 text-slate-100 lg:px-16">
-      <div className="mx-auto max-w-3xl space-y-6">
-        <div className="rounded-[2rem] border border-white/10 bg-slate-900/80 p-10 shadow-2xl">
-          <h1 className="text-3xl font-semibold text-white">Manage Profile</h1>
-          <p className="mt-2 text-slate-400">Keep your emergency contact and medical details up to date.</p>
-          <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-            <label className="block text-sm text-slate-300">Name</label>
-            <input value={form.name} name="name" onChange={handleChange} className="w-full rounded-3xl border border-white/10 bg-slate-950 px-5 py-4 text-slate-100 outline-none" />
-            <label className="block text-sm text-slate-300">Blood group</label>
-            <input value={form.bloodGroup} name="bloodGroup" onChange={handleChange} className="w-full rounded-3xl border border-white/10 bg-slate-950 px-5 py-4 text-slate-100 outline-none" />
-            <label className="block text-sm text-slate-300">Allergies</label>
-            <input value={form.allergies} name="allergies" onChange={handleChange} className="w-full rounded-3xl border border-white/10 bg-slate-950 px-5 py-4 text-slate-100 outline-none" />
-            <label className="block text-sm text-slate-300">Emergency contacts (comma separated)</label>
-            <input value={form.emergencyContacts} name="emergencyContacts" onChange={handleChange} className="w-full rounded-3xl border border-white/10 bg-slate-950 px-5 py-4 text-slate-100 outline-none" />
-            {message && <p className="text-sm text-cyan-300">{message}</p>}
-            <button type="submit" className="w-full rounded-full bg-cyan-400 px-6 py-4 text-base font-semibold text-slate-950 hover:bg-cyan-300">Save profile</button>
+    <div className="page-shell">
+      <div className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-[0.7fr_1.3fr]">
+        <aside className="glass-card p-6">
+          <p className="eyebrow">Medical profile</p>
+          <h1 className="mt-4 text-3xl font-semibold tracking-tight text-white">{profile?.name || 'Manage Profile'}</h1>
+          <div className="mt-6 rounded-lg border border-white/10 bg-zinc-950/70 p-5 text-zinc-300">
+            <p>Blood group: {profile?.bloodGroup || 'N/A'}</p>
+            <p className="mt-2">Contacts: {profile?.emergencyContacts?.length || 0}</p>
+          </div>
+        </aside>
+
+        <section className="glass-card p-6">
+          <h2 className="text-2xl font-semibold text-white">Emergency details</h2>
+          <p className="mt-2 leading-7 text-zinc-400">Keep your emergency contact and medical details up to date.</p>
+          <form onSubmit={handleSubmit} className="mt-8 grid gap-5">
+            <label className="block text-sm font-medium text-zinc-300">Name</label>
+            <input value={form.name} name="name" onChange={handleChange} className="field" />
+            <label className="block text-sm font-medium text-zinc-300">Blood group</label>
+            <input value={form.bloodGroup} name="bloodGroup" onChange={handleChange} className="field" />
+            <label className="block text-sm font-medium text-zinc-300">Allergies</label>
+            <input value={form.allergies} name="allergies" onChange={handleChange} className="field" />
+            <label className="block text-sm font-medium text-zinc-300">Emergency contacts, comma separated</label>
+            <input value={form.emergencyContacts} name="emergencyContacts" onChange={handleChange} className="field" />
+            {message && <p className="rounded-lg border border-teal-300/20 bg-teal-400/10 px-4 py-3 text-sm text-teal-100">{message}</p>}
+            <button type="submit" className="primary-btn w-full">Save profile</button>
           </form>
-        </div>
+        </section>
       </div>
     </div>
   );

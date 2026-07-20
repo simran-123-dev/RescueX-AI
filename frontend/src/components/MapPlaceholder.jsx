@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import api from '../utils/api';
 import { useSocket } from './SocketProvider';
 
-// This component dynamically loads react-leaflet if installed. If not installed
-// it shows instructions and a simple list fetched from the API.
 const MapPlaceholder = () => {
   const socketApi = useSocket();
   const [leafletLoaded, setLeafletLoaded] = useState(false);
@@ -22,17 +20,14 @@ const MapPlaceholder = () => {
         if (d?.data) combined.push(...(Array.isArray(d.data) ? d.data : d.data.items || []));
         if (v?.data) combined.push(...(Array.isArray(v.data) ? v.data : v.data.items || []));
         setItems(combined.slice(0, 200));
-        // create simple markers from fetched items if they have location
-        const m = combined
+        setMarkers(combined
           .filter((it) => it.location && it.location.coordinates)
-          .map((it) => ({ id: it._id || it.id, coords: [it.location.coordinates[1], it.location.coordinates[0]], meta: it }));
-        setMarkers(m);
+          .map((it) => ({ id: it._id || it.id, coords: [it.location.coordinates[1], it.location.coordinates[0]], meta: it })));
       } catch (err) {
         setError(err.message || 'failed');
       }
     };
 
-    // try to set center from browser
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((p) => setCenter([p.coords.latitude, p.coords.longitude]), () => {});
     }
@@ -41,7 +36,6 @@ const MapPlaceholder = () => {
   }, []);
 
   useEffect(() => {
-    // dynamic load of leaflet css and react-leaflet
     let mounted = true;
     (async () => {
       try {
@@ -52,7 +46,6 @@ const MapPlaceholder = () => {
           setLeafletLoaded(true);
         }
       } catch (e) {
-        // not installed — leave placeholder UI
         setLeafletLoaded(false);
       }
     })();
@@ -60,7 +53,7 @@ const MapPlaceholder = () => {
   }, []);
 
   useEffect(() => {
-    if (!socketApi) return;
+    if (!socketApi) return undefined;
     const onVolunteer = (data) => {
       setMarkers((m) => {
         const exists = m.find((x) => x.id === data._id || x.id === data.id);
@@ -69,36 +62,40 @@ const MapPlaceholder = () => {
         return [...m, newMarker];
       });
     };
-    socketApi.on && socketApi.on('volunteerNearby', onVolunteer);
-    socketApi.on && socketApi.on('emergencyCreated', (e) => {
-      // add emergency marker
+    const onEmergency = (e) => {
       if (e.location && e.location.coordinates) {
         setMarkers((m) => [...m, { id: e._id || e.emergencyId || Date.now(), coords: [e.location.coordinates[1], e.location.coordinates[0]], meta: e }]);
       }
-    });
+    };
+    socketApi.on && socketApi.on('volunteerNearby', onVolunteer);
+    socketApi.on && socketApi.on('emergencyCreated', onEmergency);
 
     return () => {
       socketApi.off && socketApi.off('volunteerNearby', onVolunteer);
+      socketApi.off && socketApi.off('emergencyCreated', onEmergency);
     };
   }, [socketApi]);
 
   if (!leafletLoaded) {
     return (
-      <div className="rounded-2xl bg-slate-900/60 p-6">
-        <h3 className="text-lg font-semibold">Map</h3>
-        <p className="mt-2 text-sm text-slate-400">Interactive map not available. To enable install:</p>
-        <pre className="mt-2 rounded bg-slate-800 p-3 text-xs">npm install leaflet react-leaflet</pre>
-        <p className="mt-3 text-sm text-slate-300">After installing, the map will load automatically.</p>
-        <div className="mt-4">
-          <strong className="text-sm">Nearby items fetched (sample):</strong>
-          <ul className="mt-2 max-h-40 overflow-auto text-sm">
-            {items.length === 0 && <li className="text-slate-400">No items found or endpoint unavailable.</li>}
-            {items.map((it, idx) => (
-              <li key={idx} className="mt-1">{it.name || it.email || it._id} — {it.bloodGroup || it.role || ''}</li>
-            ))}
-          </ul>
+      <div className="page-shell">
+        <div className="glass-card mx-auto max-w-5xl p-6">
+          <p className="eyebrow">Map</p>
+          <h3 className="mt-3 text-2xl font-semibold text-white">Live response map</h3>
+          <p className="mt-2 text-sm text-zinc-400">Interactive map not available. To enable install:</p>
+          <pre className="mt-3 overflow-auto rounded-lg border border-white/10 bg-zinc-950/80 p-3 text-xs text-zinc-300">npm install leaflet react-leaflet</pre>
+          <p className="mt-3 text-sm text-zinc-300">After installing, the map will load automatically.</p>
+          <div className="mt-5">
+            <strong className="text-sm text-white">Nearby items fetched</strong>
+            <ul className="mt-2 max-h-44 overflow-auto text-sm text-zinc-300">
+              {items.length === 0 && <li className="text-zinc-500">No items found or endpoint unavailable.</li>}
+              {items.map((it, idx) => (
+                <li key={idx} className="mt-1">{it.name || it.email || it._id} - {it.bloodGroup || it.role || ''}</li>
+              ))}
+            </ul>
+          </div>
+          {error && <div className="mt-3 text-rose-400">Error: {error}</div>}
         </div>
-        {error && <div className="mt-3 text-rose-400">Error: {error}</div>}
       </div>
     );
   }
@@ -106,22 +103,25 @@ const MapPlaceholder = () => {
   const { MapContainer, TileLayer, Marker, Popup } = LModule;
 
   return (
-    <div className="rounded-2xl bg-slate-900/60 p-6">
-      <h3 className="text-lg font-semibold">Live Map</h3>
-      <div className="mt-4 h-[480px] w-full">
-        <MapContainer center={center} zoom={13} style={{ height: '100%', width: '100%' }}>
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          {markers.map((m) => (
-            <Marker key={m.id} position={m.coords}>
-              <Popup>
-                <div className="text-sm">
-                  <div>{m.meta.name || m.meta.email || 'Unknown'}</div>
-                  <div className="text-xs text-slate-400">{m.meta.role || m.meta.bloodGroup || ''}</div>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
-        </MapContainer>
+    <div className="page-shell">
+      <div className="glass-card mx-auto max-w-6xl p-6">
+        <p className="eyebrow">Map</p>
+        <h3 className="mt-3 text-2xl font-semibold text-white">Live response map</h3>
+        <div className="mt-5 h-[480px] w-full overflow-hidden rounded-lg border border-white/10">
+          <MapContainer center={center} zoom={13} style={{ height: '100%', width: '100%' }}>
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            {markers.map((m) => (
+              <Marker key={m.id} position={m.coords}>
+                <Popup>
+                  <div className="text-sm">
+                    <div>{m.meta.name || m.meta.email || 'Unknown'}</div>
+                    <div className="text-xs text-zinc-500">{m.meta.role || m.meta.bloodGroup || ''}</div>
+                  </div>
+                </Popup>
+              </Marker>
+            ))}
+          </MapContainer>
+        </div>
       </div>
     </div>
   );

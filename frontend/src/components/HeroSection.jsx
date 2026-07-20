@@ -1,59 +1,75 @@
 import { motion } from 'framer-motion';
-import { FaHeartbeat, FaAmbulance } from 'react-icons/fa';
+import { FaAmbulance, FaHeartbeat } from 'react-icons/fa';
+import { FiArrowRight, FiMapPin, FiShield } from 'react-icons/fi';
 
 const HeroSection = () => {
   return (
-    <section className="relative overflow-hidden px-6 py-24 lg:px-16">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.16),_transparent_25%),radial-gradient(circle_at_bottom_right,_rgba(168,85,247,0.16),_transparent_20%)]" />
-      <div className="relative mx-auto max-w-7xl">
-        <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] items-center">
-          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-            <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/30 bg-cyan-400/10 px-4 py-2 text-sm text-cyan-200">
-              <FaHeartbeat /> Life-saving AI response in seconds
-            </span>
-            <h1 className="mt-8 max-w-2xl text-5xl font-semibold tracking-tight text-white sm:text-6xl">
-              RescueX AI — The Last-Minute Life Saver
-            </h1>
-            <p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">
-              Reduce emergency response time with instant rescue coordination, AI first aid guidance, live mapping, and volunteer dispatch.
-            </p>
-            <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <a href="#dashboard" className="inline-flex items-center justify-center rounded-full bg-cyan-400 px-8 py-4 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
-                Launch Dashboard
-              </a>
-              <a href="#features" className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-8 py-4 text-sm text-slate-200 transition hover:border-cyan-300/50 hover:bg-white/10">
-                Explore Features
-              </a>
-            </div>
-          </motion.div>
+    <section className="relative overflow-hidden px-4 py-16 sm:px-6 lg:px-10">
+      <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+        <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65 }}>
+          <span className="inline-flex items-center gap-2 rounded-lg border border-rose-300/20 bg-rose-500/10 px-3 py-2 text-sm font-medium text-rose-100">
+            <FaHeartbeat /> Life-saving response in seconds
+          </span>
+          <h1 className="mt-7 max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            RescueX AI
+          </h1>
+          <p className="mt-5 max-w-2xl text-lg leading-8 text-zinc-300">
+            A focused emergency command app for SOS dispatch, AI first aid, live map visibility, and volunteer coordination.
+          </p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <a href="/dashboard" className="primary-btn gap-2">
+              Launch Dashboard <FiArrowRight />
+            </a>
+            <a href="#features" className="secondary-btn">Explore Features</a>
+          </div>
+          <div className="mt-10 grid max-w-2xl gap-3 sm:grid-cols-3">
+            {['4 min ETA', '42 volunteers', '24/7 AI aid'].map((item) => (
+              <div key={item} className="rounded-lg border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-medium text-zinc-200">
+                {item}
+              </div>
+            ))}
+          </div>
+        </motion.div>
 
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8 }} className="relative mx-auto flex max-w-lg items-center justify-center">
-            <div className="glass-card relative w-full overflow-hidden border-cyan-300/30 px-8 py-10">
-              <div className="absolute -right-16 top-8 h-40 w-40 rounded-full bg-cyan-500/20 blur-3xl" />
-              <div className="relative space-y-6">
-                <div className="flex items-center justify-between gap-4 rounded-3xl bg-slate-900/80 p-6 ring-1 ring-white/10">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.3em] text-cyan-200/80">Emergency status</p>
-                    <h2 className="mt-3 text-3xl font-semibold text-white">Critical</h2>
-                  </div>
-                  <div className="rounded-3xl bg-cyan-500/10 p-3 text-cyan-300">
-                    <FaAmbulance className="h-8 w-8" />
-                  </div>
+        <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.65 }} className="glass-card overflow-hidden">
+          <div className="border-b border-white/10 bg-white/[0.04] px-5 py-4">
+            <p className="eyebrow">Live incident view</p>
+          </div>
+          <div className="grid gap-4 p-5">
+            <div className="rounded-lg border border-rose-300/20 bg-rose-500/10 p-5">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-sm text-rose-100">Emergency status</p>
+                  <h2 className="mt-2 text-3xl font-semibold text-white">Critical</h2>
                 </div>
-                <div className="rounded-3xl bg-slate-900/70 p-6 ring-1 ring-white/10">
-                  <p className="text-sm uppercase tracking-[0.24em] text-slate-400">Nearest ambulance</p>
-                  <div className="mt-4 flex items-center justify-between gap-6">
-                    <div>
-                      <h3 className="text-xl font-semibold text-white">Ambulance 12</h3>
-                      <p className="mt-2 text-sm text-slate-400">3.2 km away · ETA 4 min</p>
-                    </div>
-                    <span className="rounded-full bg-emerald-500/15 px-3 py-2 text-xs uppercase tracking-[0.2em] text-emerald-300">Live</span>
-                  </div>
-                </div>
+                <span className="grid h-12 w-12 place-items-center rounded-lg bg-rose-500 text-white">
+                  <FaAmbulance className="h-6 w-6" />
+                </span>
               </div>
             </div>
-          </motion.div>
-        </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-lg border border-white/10 bg-zinc-950/70 p-5">
+                <FiMapPin className="h-5 w-5 text-teal-200" />
+                <p className="mt-4 text-sm text-zinc-400">Nearest ambulance</p>
+                <p className="mt-2 text-lg font-semibold text-white">Ambulance 12, 3.2 km</p>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-zinc-950/70 p-5">
+                <FiShield className="h-5 w-5 text-amber-200" />
+                <p className="mt-4 text-sm text-zinc-400">Responder status</p>
+                <p className="mt-2 text-lg font-semibold text-white">3 units notified</p>
+              </div>
+            </div>
+            <div className="rounded-lg border border-white/10 bg-zinc-950/70 p-5">
+              <div className="flex items-center justify-between text-sm text-zinc-400">
+                <span>Route confidence</span>
+                <span className="font-semibold text-teal-200">92%</span>
+              </div>
+              <div className="mt-3 h-2 rounded-full bg-white/10">
+                <div className="h-full w-[92%] rounded-full bg-teal-300" />
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

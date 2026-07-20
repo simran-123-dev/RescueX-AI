@@ -10,7 +10,7 @@ const StatsGrid = () => {
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {stats.map((item) => (
         <div key={item.label} className="glass-card p-6 text-center">
-          <p className="text-sm uppercase tracking-[0.3em] text-cyan-300/80">{item.label}</p>
+          <p className="eyebrow">{item.label}</p>
           <p className="mt-4 text-3xl font-semibold text-white">{item.value}</p>
         </div>
       ))}
