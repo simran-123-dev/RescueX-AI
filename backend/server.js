@@ -18,38 +18,23 @@ const { verifyToken } = require("./middlewares/authMiddleware");
 const app = express();
 const server = http.createServer(app);
 
-const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  process.env.FRONTEND_URLS,
-  "https://rescuex-ai-1.onrender.com",
-]
-  .filter(Boolean)
-  .flatMap((value) => value.split(",").map((origin) => origin.trim()))
-  .filter(Boolean);
-const localOriginPattern = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
-const renderOriginPattern = /^https:\/\/rescuex-ai(-\d+)?\.onrender\.com$/;
-
 const corsOptions = {
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-
-    if (
-      allowedOrigins.includes(origin) ||
-      localOriginPattern.test(origin) ||
-      renderOriginPattern.test(origin)
-    ) {
-      return callback(null, true);
-    }
-
-    callback(new Error("Not allowed by CORS"));
-  },
+  origin: [
+    "http://localhost:5173",
+    "https://rescuex-ai-1.onrender.com",
+    process.env.FRONTEND_URL,
+  ].filter(Boolean),
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 };
 
 const io = new Server(server, {
-  cors: corsOptions,
+  cors: {
+    origin: corsOptions.origin,
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
 });
 
 app.use(cors(corsOptions));
