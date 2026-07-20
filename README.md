@@ -31,8 +31,7 @@ RescueX AI is a premium emergency response web platform designed to reduce respo
    ```
 
 ## Deployment
-- Frontend deployable to Vercel
-- Backend deployable to Render
+https://rescuex-ai-1.onrender.com/
 
 ## Sample Data
 Use `backend/seed/seed.js` to populate sample hospitals, volunteers, donors, and emergency events.
