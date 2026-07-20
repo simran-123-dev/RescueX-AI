@@ -31,7 +31,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <main className="page-shell">
+    <main className="page-shell pb-32 sm:pb-8">
       <SOSButton />
       <VoiceSOS />
       <div className="content-shell space-y-6">
